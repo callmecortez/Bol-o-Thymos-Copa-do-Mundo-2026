@@ -95,8 +95,12 @@
       </header>
       <form id="form-pick-username" class="form">
         <label class="field">
+          <span>Nome completo</span>
+          <input type="text" name="name" required autocomplete="name">
+        </label>
+        <label class="field">
           <span>Nome de usuário</span>
-          <input type="text" name="username" required>
+          <input type="text" name="username" required autocomplete="username">
           <small class="hint">3-24 caracteres, letras/números/_/-</small>
         </label>
         <button type="submit" class="btn btn-primary">Confirmar</button>

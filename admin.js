@@ -422,7 +422,16 @@ function boot() {
     } catch (ex) { err.textContent = friendlyAuthError(ex); }
   });
 
-  $("#admin-logout-btn").addEventListener("click", async () => { await logout(auth); });
+  $("#admin-logout-btn").addEventListener("click", async () => {
+    try {
+      state.listenersStarted = false;
+      await logout(auth);
+      showView("view-admin-login");
+    } catch (ex) {
+      console.error("Erro no logout:", ex);
+      toast("Erro ao sair: " + friendlyAuthError(ex), "error");
+    }
+  });
 
   $("#form-add-match").addEventListener("submit", async (e) => {
     e.preventDefault();

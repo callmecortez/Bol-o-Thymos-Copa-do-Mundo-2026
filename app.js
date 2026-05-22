@@ -376,7 +376,17 @@ function boot() {
     } catch (ex) { toast(friendlyAuthError(ex), "error"); }
   });
 
-  $("#logout-btn").addEventListener("click", async () => { await logout(auth); });
+  $("#logout-btn").addEventListener("click", async () => {
+    try {
+      state.listenersStarted = false; // permite religar os listeners no próximo login
+      await logout(auth);
+      // onAuthStateChanged leva de volta ao login; fallback abaixo por garantia
+      showView("view-login");
+    } catch (ex) {
+      console.error("Erro no logout:", ex);
+      toast("Erro ao sair: " + friendlyAuthError(ex), "error");
+    }
+  });
   $("#form-campeao").addEventListener("submit", submitCampeao);
 
   // ----- Login com Google -----
@@ -390,22 +400,26 @@ function boot() {
     try {
       const { user, isNew } = await loginWithGoogle(auth, db, domains);
       if (isNew) {
-        // Primeiro acesso via Google: pedir nome de usuário
+        // Primeiro acesso via Google: pedir nome e nome de usuário
         state.pendingGoogleUser = user;
+        const nameInput = document.querySelector("#form-pick-username input[name=name]");
+        if (nameInput) nameInput.value = user.displayName || "";
         showView("view-pick-username");
       }
       // Se não for novo, o onAuthStateChanged já leva para o app
     } catch (ex) { err.textContent = friendlyAuthError(ex); }
   });
 
-  // ----- Escolha de usuário (1º acesso Google) -----
+  // ----- Escolha de nome e usuário (1º acesso Google) -----
   $("#form-pick-username").addEventListener("submit", async (e) => {
     e.preventDefault();
     const err = $("#pick-username-error"); err.textContent = "";
-    const username = new FormData(e.target).get("username").trim().toLowerCase();
+    const fd = new FormData(e.target);
+    const username = fd.get("username").trim().toLowerCase();
+    const name = fd.get("name").trim();
     if (!state.pendingGoogleUser) { err.textContent = "Sessão expirada. Entre de novo."; return; }
     try {
-      await completeGoogleProfile(db, state.pendingGoogleUser, username);
+      await completeGoogleProfile(db, state.pendingGoogleUser, username, name);
       state.pendingGoogleUser = null;
       // Recarrega o perfil e entra
       const snap = await get(ref(db, `users/${auth.currentUser.uid}`));

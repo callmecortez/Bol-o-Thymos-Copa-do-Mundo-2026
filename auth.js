@@ -126,9 +126,12 @@ export async function loginWithGoogle(auth, db, domains) {
 }
 
 // Finaliza o cadastro de um usuário que entrou via Google pela primeira vez
-export async function completeGoogleProfile(db, user, username) {
+export async function completeGoogleProfile(db, user, username, name) {
   const vU = validateUsername(username);
   if (!vU.ok) throw new Error(vU.msg);
+  const finalName = (name || "").trim() || user.displayName || username;
+  if (finalName.length < 2) throw new Error("Informe seu nome completo");
+
   const exists = await get(ref(db, `usernames/${username}`));
   if (exists.exists()) throw new Error("Esse usuário já existe");
 
@@ -137,7 +140,7 @@ export async function completeGoogleProfile(db, user, username) {
     [`usernames/${username}`]: { email, uid: user.uid },
     [`users/${user.uid}`]: {
       uid: user.uid,
-      name: user.displayName || username,
+      name: finalName,
       username, email, role: "user",
       provider: "google",
       createdAt: Date.now()
