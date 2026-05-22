@@ -1,0 +1,54 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": false,
+
+    "usernames": {
+      ".read": true,
+      "$username": {
+        ".write": "auth != null && (newData.child('uid').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+
+    "users": {
+      "$uid": {
+        ".write": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        "role": {
+          ".validate": "newData.val() === 'user' || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+        }
+      }
+    },
+
+    "palpites": {
+      "$uid": {
+        ".write": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      }
+    },
+
+    "championGuesses": {
+      "$uid": {
+        ".write": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      }
+    },
+
+    "config": {
+      ".read": true,
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "matches": {
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "results": {
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "scoringRules": {
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "tournamentResult": {
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "teams": {
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    }
+  }
+}
