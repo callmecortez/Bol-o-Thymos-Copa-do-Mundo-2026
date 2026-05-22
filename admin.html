@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · Bolão da Copa 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-admin="true">
+  <div class="bg-grain"></div>
+
+  <!-- ============= LOGIN ADMIN ============= -->
+  <section id="view-admin-login" class="view view-auth active">
+    <div class="auth-card">
+      <header class="auth-header">
+        <p class="eyebrow">Acesso restrito</p>
+        <h1 class="display">Painel Admin</h1>
+      </header>
+      <form id="form-admin-login" class="form">
+        <label class="field">
+          <span>Usuário admin</span>
+          <input type="text" name="username" required>
+        </label>
+        <label class="field">
+          <span>Senha</span>
+          <input type="password" name="password" required>
+        </label>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+        <p class="form-error" id="admin-login-error"></p>
+      </form>
+      <div class="auth-footer">
+        <a href="index.html" class="link link-muted">← Voltar ao bolão</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= APP ADMIN ============= -->
+  <section id="view-admin-app" class="view">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark admin">⚙</span>
+        <div>
+          <p class="eyebrow">Bolão · 2026</p>
+          <h1 class="brand-title">Painel Admin</h1>
+        </div>
+      </div>
+      <div class="user-pill">
+        <span class="user-name" id="admin-display"></span>
+        <button class="btn btn-ghost" id="admin-logout-btn">Sair</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="usuarios">Usuários</button>
+      <button class="tab" data-tab="jogos">Jogos</button>
+      <button class="tab" data-tab="resultados">Resultados</button>
+      <button class="tab" data-tab="pontuacao">Pontuação</button>
+      <button class="tab" data-tab="config">Configurações</button>
+    </nav>
+
+    <!-- ABA: USUÁRIOS -->
+    <div class="tab-panel active" id="tab-usuarios">
+      <div class="panel-header">
+        <h2>Participantes</h2>
+        <p class="muted">Veja, edite e gerencie as contas dos participantes.</p>
+      </div>
+      <div id="users-list" class="users-list">
+        <p class="empty">Carregando…</p>
+      </div>
+    </div>
+
+    <!-- ABA: JOGOS -->
+    <div class="tab-panel" id="tab-jogos">
+      <div class="panel-header">
+        <h2>Jogos do torneio</h2>
+        <p class="muted">Importe direto da FIFA, adicione partidas individualmente ou importe em lote (JSON).</p>
+      </div>
+
+      <div class="fifa-block">
+        <div class="fifa-block-text">
+          <strong>⚡ Importar da FIFA</strong>
+          <p class="muted">Puxa os 104 jogos da Copa 2026 direto da API oficial da FIFA (datas, estádios, seleções e bandeiras). Pode rodar de novo a qualquer momento — atualiza os jogos existentes sem duplicar (útil quando os classificados do mata-mata forem definidos).</p>
+        </div>
+        <button id="fifa-import-btn" class="btn btn-primary">Importar jogos da FIFA</button>
+      </div>
+
+      <details class="add-match-block">
+        <summary>+ Adicionar jogo manualmente</summary>
+        <form id="form-add-match" class="form form-grid">
+          <label class="field">
+            <span>Fase</span>
+            <select name="stage" required>
+              <option value="group">Fase de Grupos</option>
+              <option value="r32">16-avos</option>
+              <option value="r16">Oitavas</option>
+              <option value="quarters">Quartas</option>
+              <option value="semis">Semifinais</option>
+              <option value="third">Disputa 3º</option>
+              <option value="final">Final</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Grupo (se aplicável)</span>
+            <input type="text" name="group" maxlength="1" placeholder="A">
+          </label>
+          <label class="field">
+            <span>Time 1 (código)</span>
+            <input type="text" name="team1" required placeholder="BRA">
+          </label>
+          <label class="field">
+            <span>Time 1 (nome)</span>
+            <input type="text" name="team1Name" required placeholder="Brasil">
+          </label>
+          <label class="field">
+            <span>Time 1 (bandeira)</span>
+            <input type="text" name="team1Flag" placeholder="🇧🇷">
+          </label>
+          <label class="field">
+            <span>Time 2 (código)</span>
+            <input type="text" name="team2" required placeholder="CRO">
+          </label>
+          <label class="field">
+            <span>Time 2 (nome)</span>
+            <input type="text" name="team2Name" required placeholder="Croácia">
+          </label>
+          <label class="field">
+            <span>Time 2 (bandeira)</span>
+            <input type="text" name="team2Flag" placeholder="🇭🇷">
+          </label>
+          <label class="field field-wide">
+            <span>Data/hora (Brasília)</span>
+            <input type="datetime-local" name="datetime" required>
+          </label>
+          <label class="field field-wide">
+            <span>Estádio</span>
+            <input type="text" name="venue" placeholder="Mercedes-Benz Stadium">
+          </label>
+          <button type="submit" class="btn btn-primary">Adicionar jogo</button>
+        </form>
+      </details>
+
+      <details class="add-match-block">
+        <summary>⇪ Importar lote (JSON)</summary>
+        <p class="muted">Cole um array de jogos. Exemplo de cada item: <code>{ "stage": "group", "group": "A", "team1": "BRA", "team1Name": "Brasil", "team1Flag": "🇧🇷", "team2": "CRO", "team2Name": "Croácia", "team2Flag": "🇭🇷", "datetime": "2026-06-15T16:00:00-03:00", "venue": "..." }</code></p>
+        <textarea id="bulk-json" rows="8" class="bulk-textarea" placeholder='[ { ... }, { ... } ]'></textarea>
+        <button id="bulk-import-btn" class="btn btn-primary">Importar</button>
+      </details>
+
+      <div id="matches-list" class="matches-list admin-matches">
+        <p class="empty">Carregando…</p>
+      </div>
+    </div>
+
+    <!-- ABA: RESULTADOS -->
+    <div class="tab-panel" id="tab-resultados">
+      <div class="panel-header">
+        <h2>Resultados</h2>
+        <p class="muted">Lance os placares finais ou sincronize com a FIFA. Vencedor da Copa fica no fim da página.</p>
+      </div>
+
+      <div class="fifa-block">
+        <div class="fifa-block-text">
+          <strong>⚡ Sincronizar resultados da FIFA</strong>
+          <p class="muted">Puxa os placares dos jogos já encerrados direto da FIFA e lança automaticamente. Só afeta jogos importados da FIFA. Você ainda pode corrigir qualquer placar manualmente abaixo.</p>
+        </div>
+        <button id="fifa-results-btn" class="btn btn-primary">Sincronizar resultados</button>
+      </div>
+
+      <div class="stage-filter" id="results-stage-filter"></div>
+      <div id="results-list" class="matches-list">
+        <p class="empty">Carregando…</p>
+      </div>
+
+      <div class="panel-header" style="margin-top:3rem">
+        <h2>Campeão e Vice (resultado real)</h2>
+        <p class="muted">Define os pontos do palpite de campeão/vice de cada participante.</p>
+      </div>
+      <form id="form-tournament-result" class="form form-grid">
+        <label class="field">
+          <span>Campeão</span>
+          <select name="champion"><option value="">—</option></select>
+        </label>
+        <label class="field">
+          <span>Vice</span>
+          <select name="runnerUp"><option value="">—</option></select>
+        </label>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+
+    <!-- ABA: PONTUAÇÃO -->
+    <div class="tab-panel" id="tab-pontuacao">
+      <div class="panel-header">
+        <h2>Regras de pontuação</h2>
+        <p class="muted">Edite os pontos de cada categoria. Mudanças recalculam o ranking automaticamente.</p>
+      </div>
+      <form id="form-scoring" class="form form-grid">
+        <label class="field">
+          <span>Acertou o vencedor</span>
+          <input type="number" name="winner" min="0" required>
+        </label>
+        <label class="field">
+          <span>Placar exato</span>
+          <input type="number" name="exactScore" min="0" required>
+        </label>
+        <label class="field">
+          <span>Gols de um time</span>
+          <input type="number" name="oneTeamGoals" min="0" required>
+        </label>
+        <label class="field">
+          <span>Diferença de gols</span>
+          <input type="number" name="goalDifference" min="0" required>
+        </label>
+        <label class="field">
+          <span>Campeão (×mult.)</span>
+          <input type="number" name="champion" min="0" required>
+        </label>
+        <label class="field">
+          <span>Vice-campeão (×mult.)</span>
+          <input type="number" name="runnerUp" min="0" required>
+        </label>
+        <button type="submit" class="btn btn-primary">Salvar regras</button>
+      </form>
+    </div>
+
+    <!-- ABA: CONFIG -->
+    <div class="tab-panel" id="tab-config">
+      <div class="panel-header">
+        <h2>Configurações</h2>
+        <p class="muted">Datas das fases (afetam o multiplicador) e domínios de e-mail aceitos.</p>
+      </div>
+      <form id="form-config" class="form form-grid">
+        <label class="field field-wide">
+          <span>Início da Copa (1x até 1 dia antes)</span>
+          <input type="datetime-local" name="tournamentStart" required>
+        </label>
+        <label class="field field-wide">
+          <span>Início dos 16-avos (vira 1/2x antes disso, fecha aqui)</span>
+          <input type="datetime-local" name="r32Start" required>
+        </label>
+        <label class="field field-wide">
+          <span>Início das Quartas (vira 1/3x antes disso, fecha aqui)</span>
+          <input type="datetime-local" name="quartersStart" required>
+        </label>
+        <label class="field field-wide">
+          <span>Domínios de e-mail (separados por vírgula)</span>
+          <input type="text" name="corporateEmailDomains" placeholder="thymosenergia.com.br">
+        </label>
+        <button type="submit" class="btn btn-primary">Salvar configurações</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
